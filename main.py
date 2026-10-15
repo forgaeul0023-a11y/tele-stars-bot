@@ -1,4 +1,5 @@
 import os
+import json
 import asyncio
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters import Command, CommandObject
@@ -14,22 +15,12 @@ PORT = int(os.getenv("PORT", 10000))
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 
-# [★Product Database] 10 Products
-PRODUCTS = {
-    "item_001": {"title": "01", "desc": "Would you like to purchase 01!", "price": 250, "link": "https://gofile.io", "success_msg": "PW:FGW002301"},
-    "item_002": {"title": "02", "desc": "Would you like to purchase 02?", "price": 250, "link": "https://example.com", "success_msg": "PW:FGW002302"},
-    "item_003": {"title": "03", "desc": "Would you like to purchase 03?", "price": 250, "link": "https://example.com", "success_msg": "Pw:FGW002303"},
-    "item_004": {"title": "04", "desc": "Would you like to purchase 04?", "price": 300, "link": "https://example.com", "success_msg": "Pw:FGW002304"},
-    "item_005": {"title": "05", "desc": "Would you like to purchase 05?", "price": 300, "link": "https://example.com", "success_msg": "Pw:FGW002305"},
-    "item_006": {"title": "06", "desc": "Would you like to purchase 06?", "price": 400, "link": "https://example.com", "success_msg": "Pw:FGW002306"},
-    "item_007": {"title": "05", "desc": "Would you like to purchase 07?", "price": 150, "link": "https://example.com", "success_msg": "Pw:FGW002307"},
-    "item_008": {"title": "08", "desc": "Would you like to purchase 08?", "price": 150, "link": "https://example.com", "success_msg": "Pw:FGW002308"},
-    "item_009": {"title": "09", "desc": "Would you like to purchase 09?", "price": 150, "link": "https://example.com", "success_msg": "Pw:FGW002309"},
-    "item_010": {"title": "10", "desc": "Would you like to purchase 10?", "price": 150, "link": "https://example.com", "success_msg": "Pw:FGW002310"},
-    "item_011": {"title": "11", "desc": "Would you like to purchase 11?", "price": 150, "link": "https://example.com", "success_msg": "Pw:FGW002311"},
-    "item_012": {"title": "12", "desc": "Would you like to purchase 12?", "price": 150, "link": "https://example.com", "success_msg": "Pw:FGW002312"},
-    "item_013": {"title": "13", "desc": "Would you like to purchase 13?", "price": 150, "link": "https://example.com", "success_msg": "Pw:FGW002313"}
-}
+# 🔧 상품 목록을 외부 JSON에서 로드
+def load_products():
+    with open("products.json", "r", encoding="utf-8") as f:
+        return json.load(f)
+
+PRODUCTS = load_products()
 
 # 공통 결제 송장 생성 함수
 async def send_product_invoice(chat_id: int, item_id: str, product: dict):
@@ -42,23 +33,17 @@ async def send_product_invoice(chat_id: int, item_id: str, product: dict):
         reply_markup=pay_builder.as_markup()
     )
 
-# 1. /start 명령어 처리 (★비동기 안전 대기 장치 적용)
+# 1. /start 명령어 (딥링크 처리)
 @dp.message(Command("start"))
 async def start_handler(message: types.Message, command: CommandObject):
-    # 링크 뒤에 상품 코드가 완벽하게 매칭되어 들어온 경우
     if command.args and command.args in PRODUCTS:
         item_id = command.args
         product = PRODUCTS[item_id]
-        
-        # 💡 [핵심 패치] 비동기 웹훅 통신이 안정적으로 자리를 잡을 수 있도록 백그라운드로 결제창을 밀어 넣습니다.
-        # 이 방식을 쓰면 텔레그램 서버가 신규 유저 세션을 검증하기 전에 결제창 명령이 증발하는 오류를 완벽히 막아줍니다.
         asyncio.create_task(send_product_invoice(message.chat.id, item_id, product))
         return
-
-    # 그냥 들어온 사람은 철저하게 무시하여 목록을 숨깁니다.
     return
 
-# 관리자용 상품 주소 추출/백업용 명령어
+# 관리자용 상품 목록
 @dp.message(Command("menu", "buy"))
 async def menu_handler(message: types.Message):
     builder = InlineKeyboardBuilder()
@@ -81,13 +66,46 @@ async def process_product_selection(callback_query: types.CallbackQuery):
 async def checkout_handler(pre_checkout_query: types.PreCheckoutQuery):
     await bot.answer_pre_checkout_query(pre_checkout_query_id=pre_checkout_query.id, ok=True)
 
+# 결제 성공 → 영상 직접 전송
 @dp.message(F.successful_payment)
 async def success_handler(message: types.Message):
     payment_info = message.successful_payment
     bought_item_id = payment_info.invoice_payload
     product = PRODUCTS.get(bought_item_id)
-    if product:
-        await message.answer(f"🎉 **Payment for [{product['title']}] completed successfully!**\n💰 Total Amount: {payment_info.total_amount} Stars ⭐\n\n💬 {product['success_msg']}\n🔗 {product['link']}\n\n⚠️ Please keep this link safe.")
+
+    if not product:
+        await message.answer("Payment successful, but product not found.")
+        return
+
+    await message.answer(
+        f"🎉 **Payment for [{product['title']}] completed!**\n"
+        f"💰 {payment_info.total_amount} Stars ⭐\n\n"
+        f"📥 Sending your video..."
+    )
+
+    if product.get("file_id"):
+        try:
+            await bot.send_video(
+                chat_id=message.chat.id,
+                video=product["file_id"],
+                caption=f"🎬 {product['title']}\n⚠️ Keep this file safe."
+            )
+        except Exception as e:
+            # 전송 실패 시 링크 폴백
+            await message.answer(f"⚠️ Video send failed. Link:\n{product.get('link','N/A')}")
+    else:
+        await message.answer(f"🔗 {product.get('link','N/A')}")
+
+# 🔧 file_id 추출용 핸들러 (영상 업로드 시 file_id 출력)
+@dp.message(F.video)
+async def get_file_id(message: types.Message):
+    v = message.video
+    await message.answer(
+        f"🎬 {v.file_name}\n"
+        f"size: {v.file_size}\n"
+        f"`{v.file_id}`",
+        parse_mode="Markdown"
+    )
 
 async def on_startup(bot: Bot):
     await bot.set_webhook(f"{WEBHOOK_BASE}{WEBHOOK_PATH}")
