@@ -12,7 +12,7 @@ WEBHOOK_BASE = os.getenv("WEBHOOK_BASE")
 WEBHOOK_PATH = "/webhook"
 PORT = int(os.getenv("PORT", 10000))
 
-bot = Bot(token=BOT_TOKEN)
+bot = Bot(token=BOT_TOKEN, api_version="10.3")  # <-- API 버전 10.3
 dp = Dispatcher()
 
 # 🔧 상품 목록을 외부 JSON에서 로드
@@ -41,12 +41,12 @@ async def start_handler(message: types.Message, command: CommandObject):
         product = PRODUCTS[item_id]
         asyncio.create_task(send_product_invoice(message.chat.id, item_id, product))
     else:
-        # 시작 시 텍스트 (공유 못 하게)
+        # 시작 시 텍스트 (재전송과 저장 차단)
         await bot.send_message(
             chat_id=message.chat.id,
             text="🛒 **Welcome to our shop!**\n\nUse /menu to browse products.",
             reply_markup=types.ReplyKeyboardRemove(),
-            disable_forward=True  # <-- 공유 막기
+            protect_content=True  # <-- 재전송과 저장 차단
         )
     return
 
@@ -100,7 +100,7 @@ async def success_handler(message: types.Message):
                 chat_id=message.chat.id,
                 document=product["file_id"],
                 caption=caption,
-                force_document=True  # <-- 공유 막기
+                protect_content=True  # <-- 재전송과 저장 차단
             )
         except Exception:
             await message.answer("⚠️ File send failed. Please contact the admin.")
