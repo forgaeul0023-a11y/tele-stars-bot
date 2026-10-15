@@ -66,7 +66,7 @@ async def process_product_selection(callback_query: types.CallbackQuery):
 async def checkout_handler(pre_checkout_query: types.PreCheckoutQuery):
     await bot.answer_pre_checkout_query(pre_checkout_query_id=pre_checkout_query.id, ok=True)
 
-# 결제 성공 → 압축파일 직접 전송 (send_document)
+# 결제 성공 → 압축파일 직접 전송
 @dp.message(F.successful_payment)
 async def success_handler(message: types.Message):
     payment_info = message.successful_payment
@@ -95,11 +95,11 @@ async def success_handler(message: types.Message):
                 caption=caption
             )
         except Exception:
-            await message.answer(f"⚠️ File send failed. Link:\n{product.get('link','N/A')}")
+            await message.answer("⚠️ File send failed. Please contact the admin.")
     else:
-        await message.answer(f"🔗 {product.get('link','N/A')}")
+        await message.answer("⚠️ Product file is not set. Please contact the admin.")
 
-# 🔧 file_id 추출용 핸들러 (압축파일 + 영상 둘 다 잡음)
+# 🔧 file_id 추출용 핸들러 (압축파일 + 영상 둘 다)
 @dp.message(F.document)
 async def get_document_id(message: types.Message):
     d = message.document
