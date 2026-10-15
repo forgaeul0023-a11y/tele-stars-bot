@@ -4,12 +4,12 @@
   "item_003": {"title": "03", "desc": "Would you like to purchase 03?", "price": 250, "file_id": "BQACAgEAAxkBAAMoatC4OJGJONfOWxSHkts-eebjYiYAAhcIAAJ0j4FG70Aq4xEAAZG0PQQ", "password": "FGW002303"},
   "item_004": {"title": "04", "desc": "Would you like to purchase 04?", "price": 300, "file_id": "BQACAgEAAxkBAAMqatC4nq_HCEZ7WMkCJXuyiSXQ35IAAhkIAAJ0j4FGA4pBxolEJmQ9BA", "password": "FGW002304"},
   "item_005": {"title": "05", "desc": "Would you like to purchase 05?", "price": 300, "file_id": "BQACAgEAAxkBAAMsatC5BVpao1IrxPb8os760aVVwisAAhoIAAJ0j4FGwMKtbqi6uRs9BA", "password": "FGW002305"},
-  "item_006": {"title": "06", "desc": "Would you like to purchase 06?", "price": 400, "file_id": "BQACAgEAAxkBAAMuatC6dG2cnHGgflKRX40RxODx56YAAhsIAAJ0j4FGzJCJUgrvlcE9BA", "password": "FGW002306"},
-  "item_007": {"title": "07", "desc": "Would you like to purchase 07?", "price": 150, "file_id": "BQACAgEAAxkBAAMwatC8C5GelCDLDU8dUy_RKUz5US8AAh4IAAJ0j4FGNp0DKSrmMn89BA", "password": "FGW002307"},
-  "item_008": {"title": "08", "desc": "Would you like to purchase 08?", "price": 150, "file_id": "BQACAgEAAxkBAAMyatC8OJ3PW34iQoQ9QXyv-Zv8uFAAAh8IAAJ0j4FGfvI_xCdSe3s9BA", "password": "FGW002308"},
-  "item_009": {"title": "09", "desc": "Would you like to purchase 09?", "price": 150, "file_id": "BQACAgEAAxkBAAM0atC8fQ2acayMMt6YQ8uik7M0Vv0AAiEIAAJ0j4FG7xEO7lhpDGw9BA", "password": "FGW002309"},
-  "item_010": {"title": "10", "desc": "Would you like to purchase 10?", "price": 150, "file_id": "BQACAgEAAxkBAAM2atC9JRd5VdLmartYpEzHuQqFAlAAAiUIAAJ0j4FGBgKYfo3lLjo9BA", "password": "FGW002310"},
-  "item_011": {"title": "11", "desc": "Would you like to purchase 11?", "price": 150, "file_id": "BQACAgEAAxkBAAM4atC9eumgKy9ZNtC8CUj-gM0JkxsAAiYIAAJ0j4FGjfapB-bTPUU9BA", "password": "FGW002311"},
-  "item_012": {"title": "12", "desc": "Would you like to purchase 12?", "price": 150, "file_id": "BQACAgEAAxkBAAM6atC-mL5GH2Vjhrn08lQg_e5awG4AAikIAAJ0j4FGY85R1gl-KSw9BA", "password": "FGW002312"},
-  "item_013": {"title": "13", "desc": "Would you like to purchase 13?", "price": 150, "file_id": "BQACAgEAAxkBAAM8atC_ikPu6bI-dNcKh0Fvu_DYyAIAAisIAAJ0j4FG29orKTnQjFg9BA", "password": "FGW002313"}
+  "item_006": {"title": "06", "desc": "Would you like to purchase 06?", "price": 350, "file_id": "BQACAgEAAxkBAAMuatC6dG2cnHGgflKRX40RxODx56YAAhsIAAJ0j4FGzJCJUgrvlcE9BA", "password": "FGW002306"},
+  "item_007": {"title": "07", "desc": "Would you like to purchase 07?", "price": 200, "file_id": "BQACAgEAAxkBAAMwatC8C5GelCDLDU8dUy_RKUz5US8AAh4IAAJ0j4FGNp0DKSrmMn89BA", "password": "FGW002307"},
+  "item_008": {"title": "08", "desc": "Would you like to purchase 08?", "price": 200, "file_id": "BQACAgEAAxkBAAMyatC8OJ3PW34iQoQ9QXyv-Zv8uFAAAh8IAAJ0j4FGfvI_xCdSe3s9BA", "password": "FGW002308"},
+  "item_009": {"title": "09", "desc": "Would you like to purchase 09?", "price": 200, "file_id": "BQACAgEAAxkBAAM0atC8fQ2acayMMt6YQ8uik7M0Vv0AAiEIAAJ0j4FG7xEO7lhpDGw9BA", "password": "FGW002309"},
+  "item_010": {"title": "10", "desc": "Would you like to purchase 10?", "price": 200, "file_id": "BQACAgEAAxkBAAM2atC9JRd5VdLmartYpEzHuQqFAlAAAiUIAAJ0j4FGBgKYfo3lLjo9BA", "password": "FGW002310"},
+  "item_011": {"title": "11", "desc": "Would you like to purchase 11?", "price": 200, "file_id": "BQACAgEAAxkBAAM4atC9eumgKy9ZNtC8CUj-gM0JkxsAAiYIAAJ0j4FGjfapB-bTPUU9BA", "password": "FGW002311"},
+  "item_012": {"title": "12", "desc": "Would you like to purchase 12?", "price": 250, "file_id": "BQACAgEAAxkBAAM6atC-mL5GH2Vjhrn08lQg_e5awG4AAikIAAJ0j4FGY85R1gl-KSw9BA", "password": "FGW002312"},
+  "item_013": {"title": "13", "desc": "Would you like to purchase 13?", "price": 200, "file_id": "BQACAgEAAxkBAAM8atC_ikPu6bI-dNcKh0Fvu_DYyAIAAisIAAJ0j4FG29orKTnQjFg9BA", "password": "FGW002313"}
 }
