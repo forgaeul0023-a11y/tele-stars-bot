@@ -50,7 +50,7 @@ async def menu_handler(message: types.Message):
     for item_id, info in PRODUCTS.items():
         builder.button(text=f"{info['title']} ({info['price']}⭐)", callback_data=f"select_{item_id}")
     builder.adjust(1)
-    await message.answer("🛒 **[Admin Menu] Product List:**", reply_markup=builder.as_markup())
+    await message.answer("🛒 [Admin Menu] Product List:", reply_markup=builder.as_markup())
 
 @dp.callback_query(F.data.startswith("select_"))
 async def process_product_selection(callback_query: types.CallbackQuery):
@@ -78,8 +78,8 @@ async def success_handler(message: types.Message):
         return
 
     await message.answer(
-        f"🎉 **Payment for [{product['title']}] completed!**\n"
-        f"💰 {payment_info.total_amount} Stars ⭐\n\n"
+        f"🎉 Payment for [{product['title']}] completed!\n"
+        f"💰 {payment_info.total_amount} Stars\n\n"
         f"📦 Sending your file..."
     )
 
@@ -99,25 +99,24 @@ async def success_handler(message: types.Message):
     else:
         await message.answer("⚠️ Product file is not set. Please contact the admin.")
 
-# 🔧 file_id 추출용 핸들러 (압축파일 + 영상 둘 다)
+# 🔧 file_id 추출용 핸들러 (압축파일) — 특수문자 안전 (parse_mode 제거)
 @dp.message(F.document)
 async def get_document_id(message: types.Message):
     d = message.document
     await message.answer(
         f"📦 {d.file_name}\n"
         f"size: {d.file_size}\n"
-        f"`{d.file_id}`",
-        parse_mode="Markdown"
+        f"{d.file_id}"
     )
 
+# 🔧 file_id 추출용 핸들러 (영상) — 특수문자 안전
 @dp.message(F.video)
 async def get_video_id(message: types.Message):
     v = message.video
     await message.answer(
         f"🎬 {v.file_name}\n"
         f"size: {v.file_size}\n"
-        f"`{v.file_id}`",
-        parse_mode="Markdown"
+        f"{v.file_id}"
     )
 
 async def on_startup(bot: Bot):
