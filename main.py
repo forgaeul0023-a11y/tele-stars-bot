@@ -16,16 +16,19 @@ dp = Dispatcher()
 
 # [★Product Database] 10 Products
 PRODUCTS = {
-    "item_001": {"title": "Y-01 3:15", "desc": "🎵 Thank you for choosing Y-01!", "price": 1, "link": "https://gofile.io", "success_msg": "Enjoy the premium sound!"},
-    "item_002": {"title": "R-01 2:46", "desc": "🔥 Ready to unlock R-01?", "price": 200, "link": "https://example.com", "success_msg": "Welcome to the R-01 premium club!"},
-    "item_003": {"title": "G-01 2:56", "desc": "Would you like to purchase G-01?", "price": 200, "link": "https://example.com", "success_msg": "Here is your link for G-01:"},
-    "item_004": {"title": "L-01 4:10", "desc": "Would you like to purchase L-01?", "price": 200, "link": "https://example.com", "success_msg": "Here is your link for L-01:"},
-    "item_005": {"title": "Le-01 4:34", "desc": "Would you like to purchase Le-01?", "price": 200, "link": "https://example.com", "success_msg": "Here is your link for Le-01:"},
-    "item_006": {"title": "W-01 7:04", "desc": "Would you like to purchase W-01?", "price": 250, "link": "https://example.com", "success_msg": "Here is your link for W-01:"},
-    "item_007": {"title": "Y-02 0:55", "desc": "Would you like to purchase Y-02?", "price": 100, "link": "https://example.com", "success_msg": "Here is your link for Y-02:"},
-    "item_008": {"title": "G-02 0:59", "desc": "Would you like to purchase G-02?", "price": 100, "link": "https://example.com", "success_msg": "Here is your link for G-02:"},
-    "item_009": {"title": "G-03 0:59", "desc": "Would you like to purchase G-03?", "price": 100, "link": "https://example.com", "success_msg": "Here is your link for G-03:"},
-    "item_010": {"title": "R-02 1:15", "desc": "Would you like to purchase R-02?", "price": 100, "link": "https://example.com", "success_msg": "Here is your link for R-02:"}
+    "item_001": {"title": "01", "desc": "Would you like to purchase 01!", "price": 250, "link": "https://gofile.io", "success_msg": "PW:FGW002301"},
+    "item_002": {"title": "02", "desc": "Would you like to purchase 02?", "price": 250, "link": "https://example.com", "success_msg": "PW:FGW002302"},
+    "item_003": {"title": "03", "desc": "Would you like to purchase 03?", "price": 250, "link": "https://example.com", "success_msg": "Pw:FGW002303"},
+    "item_004": {"title": "04", "desc": "Would you like to purchase 04?", "price": 300, "link": "https://example.com", "success_msg": "Pw:FGW002304"},
+    "item_005": {"title": "05", "desc": "Would you like to purchase 05?", "price": 300, "link": "https://example.com", "success_msg": "Pw:FGW002305"},
+    "item_006": {"title": "06", "desc": "Would you like to purchase 06?", "price": 400, "link": "https://example.com", "success_msg": "Pw:FGW002306"},
+    "item_007": {"title": "05", "desc": "Would you like to purchase 07?", "price": 150, "link": "https://example.com", "success_msg": "Pw:FGW002307"},
+    "item_008": {"title": "08", "desc": "Would you like to purchase 08?", "price": 150, "link": "https://example.com", "success_msg": "Pw:FGW002308"},
+    "item_009": {"title": "09", "desc": "Would you like to purchase 09?", "price": 150, "link": "https://example.com", "success_msg": "Pw:FGW002309"},
+    "item_010": {"title": "10", "desc": "Would you like to purchase 10?", "price": 150, "link": "https://example.com", "success_msg": "Pw:FGW002310"},
+    "item_011": {"title": "11", "desc": "Would you like to purchase 11?", "price": 150, "link": "https://example.com", "success_msg": "Pw:FGW002311"},
+    "item_012": {"title": "12", "desc": "Would you like to purchase 12?", "price": 150, "link": "https://example.com", "success_msg": "Pw:FGW002312"},
+    "item_013": {"title": "13", "desc": "Would you like to purchase 13?", "price": 150, "link": "https://example.com", "success_msg": "Pw:FGW002313"}
 }
 
 # 공통 결제 송장 생성 함수
@@ -39,33 +42,30 @@ async def send_product_invoice(chat_id: int, item_id: str, product: dict):
         reply_markup=pay_builder.as_markup()
     )
 
-# 1. /start 명령어 처리 (★딥링크 상품 코드 감지 기능 주입 완료)
+# 1. /start 명령어 처리 (★개별 상품 링크 입장만 허용하도록 전면 수정)
 @dp.message(Command("start"))
 async def start_handler(message: types.Message, command: CommandObject):
-    # 주소 뒤에 상품 코드(예: item_001)가 붙어 들어온 경우
+    # 홍보 링크 뒤에 상품 코드(예: item_001)가 완벽하게 매칭되어 들어온 경우
     if command.args and command.args in PRODUCTS:
         item_id = command.args
         product = PRODUCTS[item_id]
-        await send_product_invoice(message.chat.id, item_id, product) # 즉시 개별 결제창 팝업
+        await send_product_invoice(message.chat.id, item_id, product) # 즉시 개별 결제창만 팝업
         return
 
-    # 그냥 들어온 경우만 메뉴판 출력
-    builder = InlineKeyboardBuilder()
-    for item_id, info in PRODUCTS.items():
-        builder.button(text=f"{info['title']} ({info['price']}⭐)", callback_data=f"select_{item_id}")
-    builder.adjust(1)
-    await message.answer("🛒 **Please select a digital product to purchase:**", reply_markup=builder.as_markup())
+    # ★ 중요: 그냥 /start를 치거나 봇을 처음 켠 사용자는 전체 목록을 띄우지 않고 완전히 무시합니다.
+    # (유저에게 혼란을 주지 않기 위해 봇이 아예 묵비권을 행사하거나 아무 반응을 하지 않게 만듭니다.)
+    return
 
-# 2. /menu, /buy 명령어 처리
+# 혹시 모를 관리자용 검증 명령어로 변경 (주소 추출용 백업 명령어)
 @dp.message(Command("menu", "buy"))
 async def menu_handler(message: types.Message):
+    # 사장님이 테스트해볼 때를 위해 /menu를 치면 목록이 나오게 최소한의 안전장치만 남겨둠
     builder = InlineKeyboardBuilder()
     for item_id, info in PRODUCTS.items():
         builder.button(text=f"{info['title']} ({info['price']}⭐)", callback_data=f"select_{item_id}")
     builder.adjust(1)
-    await message.answer("🛒 **Please select a digital product to purchase:**", reply_markup=builder.as_markup())
+    await message.answer("🛒 **[Admin Menu] Product List:**", reply_markup=builder.as_markup())
 
-# 3. 유저가 메뉴판에서 버튼을 직접 눌렀을 때 처리
 @dp.callback_query(F.data.startswith("select_"))
 async def process_product_selection(callback_query: types.CallbackQuery):
     item_id = callback_query.data.replace("select_", "")
