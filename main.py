@@ -42,24 +42,30 @@ async def send_product_invoice(chat_id: int, item_id: str, product: dict):
         reply_markup=pay_builder.as_markup()
     )
 
-# 1. /start 명령어 처리 (★개별 상품 링크 입장만 허용하도록 전면 수정)
+# 1. /start 명령어 처리 (★신규 유저 필터 우회 기능 탑재)
 @dp.message(Command("start"))
 async def start_handler(message: types.Message, command: CommandObject):
-    # 홍보 링크 뒤에 상품 코드(예: item_001)가 완벽하게 매칭되어 들어온 경우
+    # 링크 뒤에 상품 코드가 완벽하게 붙어 들어온 경우
     if command.args and command.args in PRODUCTS:
         item_id = command.args
         product = PRODUCTS[item_id]
-        await send_product_invoice(message.chat.id, item_id, product) # 즉시 개별 결제창만 팝업
+        
+        # 💡 [핵심 패치] 신규 유저 세션을 열어주기 위해 아주 짧은 가짜 대답 후 결제창을 보냅니다.
+        # 이 과정이 있어야 텔레그램 서버가 결제창 발송을 허용합니다.
+        status_msg = await message.answer("🔄 Connecting to secure payment server...")
+        await asyncio.sleep(0.5) # 0.5초 대기
+        await status_msg.delete() # 안내 문구 삭제 (깔끔하게 결제창만 남기기 위함)
+        
+        # 진짜 결제창 즉시 팝업
+        await send_product_invoice(message.chat.id, item_id, product)
         return
 
-    # ★ 중요: 그냥 /start를 치거나 봇을 처음 켠 사용자는 전체 목록을 띄우지 않고 완전히 무시합니다.
-    # (유저에게 혼란을 주지 않기 위해 봇이 아예 묵비권을 행사하거나 아무 반응을 하지 않게 만듭니다.)
+    # 그냥 검색해서 들어온 사람은 철저하게 무시합니다.
     return
 
-# 혹시 모를 관리자용 검증 명령어로 변경 (주소 추출용 백업 명령어)
+# 관리자용 상품 주소 추출/백업용 명령어
 @dp.message(Command("menu", "buy"))
 async def menu_handler(message: types.Message):
-    # 사장님이 테스트해볼 때를 위해 /menu를 치면 목록이 나오게 최소한의 안전장치만 남겨둠
     builder = InlineKeyboardBuilder()
     for item_id, info in PRODUCTS.items():
         builder.button(text=f"{info['title']} ({info['price']}⭐)", callback_data=f"select_{item_id}")
