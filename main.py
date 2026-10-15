@@ -66,7 +66,7 @@ async def process_product_selection(callback_query: types.CallbackQuery):
 async def checkout_handler(pre_checkout_query: types.PreCheckoutQuery):
     await bot.answer_pre_checkout_query(pre_checkout_query_id=pre_checkout_query.id, ok=True)
 
-# 결제 성공 → 영상 직접 전송
+# 결제 성공 → 압축파일 직접 전송 (send_document)
 @dp.message(F.successful_payment)
 async def success_handler(message: types.Message):
     payment_info = message.successful_payment
@@ -80,25 +80,38 @@ async def success_handler(message: types.Message):
     await message.answer(
         f"🎉 **Payment for [{product['title']}] completed!**\n"
         f"💰 {payment_info.total_amount} Stars ⭐\n\n"
-        f"📥 Sending your video..."
+        f"📦 Sending your file..."
     )
 
     if product.get("file_id"):
         try:
-            await bot.send_video(
+            caption = f"📦 {product['title']}\n"
+            if product.get("password"):
+                caption += f"🔑 PW: {product['password']}\n"
+            caption += "⚠️ Keep this file safe."
+            await bot.send_document(
                 chat_id=message.chat.id,
-                video=product["file_id"],
-                caption=f"🎬 {product['title']}\n⚠️ Keep this file safe."
+                document=product["file_id"],
+                caption=caption
             )
-        except Exception as e:
-            # 전송 실패 시 링크 폴백
-            await message.answer(f"⚠️ Video send failed. Link:\n{product.get('link','N/A')}")
+        except Exception:
+            await message.answer(f"⚠️ File send failed. Link:\n{product.get('link','N/A')}")
     else:
         await message.answer(f"🔗 {product.get('link','N/A')}")
 
-# 🔧 file_id 추출용 핸들러 (영상 업로드 시 file_id 출력)
+# 🔧 file_id 추출용 핸들러 (압축파일 + 영상 둘 다 잡음)
+@dp.message(F.document)
+async def get_document_id(message: types.Message):
+    d = message.document
+    await message.answer(
+        f"📦 {d.file_name}\n"
+        f"size: {d.file_size}\n"
+        f"`{d.file_id}`",
+        parse_mode="Markdown"
+    )
+
 @dp.message(F.video)
-async def get_file_id(message: types.Message):
+async def get_video_id(message: types.Message):
     v = message.video
     await message.answer(
         f"🎬 {v.file_name}\n"
