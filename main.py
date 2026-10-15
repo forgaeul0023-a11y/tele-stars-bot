@@ -40,7 +40,14 @@ async def start_handler(message: types.Message, command: CommandObject):
         item_id = command.args
         product = PRODUCTS[item_id]
         asyncio.create_task(send_product_invoice(message.chat.id, item_id, product))
-        return
+    else:
+        # 시작 시 텍스트 (공유 못 하게)
+        await bot.send_message(
+            chat_id=message.chat.id,
+            text="🛒 **Welcome to our shop!**\n\nUse /menu to browse products.",
+            reply_markup=types.ReplyKeyboardRemove(),
+            disable_forward=True  # <-- 공유 막기
+        )
     return
 
 # 관리자용 상품 목록
@@ -78,8 +85,8 @@ async def success_handler(message: types.Message):
         return
 
     await message.answer(
-        f"🎉 Payment for [{product['title']}] completed!\n"
-        f"💰 {payment_info.total_amount} Stars\n\n"
+        f"🎉 **Payment for [{product['title']}] completed!**\n"
+        f"💰 {payment_info.total_amount} Stars ⭐\n\n"
         f"📦 Sending your file..."
     )
 
@@ -92,14 +99,15 @@ async def success_handler(message: types.Message):
             await bot.send_document(
                 chat_id=message.chat.id,
                 document=product["file_id"],
-                caption=caption
+                caption=caption,
+                force_document=True  # <-- 공유 막기
             )
         except Exception:
             await message.answer("⚠️ File send failed. Please contact the admin.")
     else:
         await message.answer("⚠️ Product file is not set. Please contact the admin.")
 
-# 🔧 file_id 추출용 핸들러 (압축파일) — 특수문자 안전 (parse_mode 제거)
+# 🔧 file_id 추출용 핸들러 (압축파일 + 영상 둘 다)
 @dp.message(F.document)
 async def get_document_id(message: types.Message):
     d = message.document
@@ -109,7 +117,6 @@ async def get_document_id(message: types.Message):
         f"{d.file_id}"
     )
 
-# 🔧 file_id 추출용 핸들러 (영상) — 특수문자 안전
 @dp.message(F.video)
 async def get_video_id(message: types.Message):
     v = message.video
