@@ -104,15 +104,11 @@ async def success_handler(message: types.Message):
     )
 
     if product.get("file_id"):
-        caption = f"📦 {product['title']}\n"
-        if product.get("password"):
-            caption += f"🔑 PW: {product['password']}\n"
-        caption += "⚠️ Keep this file safe."
         try:
             await bot.send_document(
                 chat_id=message.chat.id,
                 document=product["file_id"],
-                caption=caption,
+                caption=f"📦 {product['title']}\n⚠️ Keep this file safe.",
                 protect_content=True
             )
         except Exception:
@@ -121,11 +117,19 @@ async def success_handler(message: types.Message):
                 await bot.send_document(
                     chat_id=message.chat.id,
                     document=product["file_id"],
-                    caption=caption,
+                    caption=f"📦 {product['title']}\n⚠️ Keep this file safe.",
                     protect_content=True
                 )
             except Exception:
                 await message.answer("⚠️ File send failed. Please /resend or contact the admin.")
+                return
+
+        if product.get("password"):
+            await bot.send_message(
+                chat_id=message.chat.id,
+                text=f"🔑 PW: {product['password']}",
+                protect_content=True
+            )
     else:
         await message.answer("⚠️ Product file is not set. Please contact the admin.")
 
@@ -144,14 +148,27 @@ async def resend_handler(message: types.Message):
         await message.answer("⚠️ No record found. Please contact the admin.")
         return
     product = PRODUCTS.get(last["i"])
-    if product and product.get("file_id"):
+    if not product or not product.get("file_id"):
+        await message.answer("⚠️ No file to resend. Please contact the admin.")
+        return
+
+    try:
         await bot.send_document(
             chat_id=message.chat.id,
             document=product["file_id"],
+            caption=f"📦 {product['title']}\n⚠️ Keep this file safe.",
             protect_content=True
         )
-    else:
-        await message.answer("⚠️ No file to resend. Please contact the admin.")
+    except Exception:
+        await message.answer("⚠️ Resend failed. Please contact the admin.")
+        return
+
+    if product.get("password"):
+        await bot.send_message(
+            chat_id=message.chat.id,
+            text=f"🔑 PW: {product['password']}",
+            protect_content=True
+        )
 
 @dp.message(F.document, F.from_user.id == ADMIN_ID)
 async def get_document_id(message: types.Message):
