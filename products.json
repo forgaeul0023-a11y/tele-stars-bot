@@ -23,6 +23,7 @@
   "item_022": {"title": "22", "desc": "Would you like to purchase 22?", "price": 300, "file_id": "BQACAgEAAxkBAAIUUmr13oVB9Jdx1dpAF7FXZutegRwWAAJ8CAAC6bCwR0j0pzym9wb8PQQ", "password": "FGW002322"},
   "item_023": {"title": "23", "desc": "Would you like to purchase 23?", "price": 350, "file_id": "BQACAgEAAxkBAAIVtmr5qjRgb6zSywNldrqxEXrBQbP9AAKJCQACGDHJR_DHZWKV0o1uPQQ", "password": "FGW002323"},
   "item_024": {"title": "24", "desc": "Would you like to purchase 24?", "price": 400, "file_id": "BQACAgEAAxkBAAIWt2r62-w4R0ZJgrWxCKQY8ln9D78yAAKCCAACGDHZR_fZs0ywobpTPQQ", "password": "FGW002324"},
-  "item_025": {"title": "25", "desc": "Would you like to purchase 25?", "price": 350, "file_id": "BQACAgEAAxkBAAIW2mr7DhuCKWBG0il_OvEq969JjePNAALUCAACGDHZR2lWfm0OHKIbPQQ", "password": "FGW002325"}
+  "item_025": {"title": "25", "desc": "Would you like to purchase 25?", "price": 350, "file_id": "BQACAgEAAxkBAAIW2mr7DhuCKWBG0il_OvEq969JjePNAALUCAACGDHZR2lWfm0OHKIbPQQ", "password": "FGW002325"},
+  "item_026": {"title": "26", "desc": "Would you like to purchase 26?", "price": 350, "file_id": "BQACAgEAAxkBAAIXf2r8UjDnPZ4RPiGTN4rzL-1BVB7bAALRCgAC0UDpR5wTSbUanW54PQQ", "password": "FGW002326"}
 }
 
